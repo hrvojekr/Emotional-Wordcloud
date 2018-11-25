@@ -2,11 +2,13 @@
 install.packages("tidyverse")
 install.packages("tidytext")
 install.packages("wordcloud")
+install.packages("radarchart")
 
 #Load Library
 library(tidyverse)
 library(tidytext)
 library(wordcloud)
+library(radarchart)
 
 #Get the data
 WholeConversation <- read.delim("gyppwhole.txt") 
@@ -30,3 +32,16 @@ head(graphData)
 
 #Plot the Data
 comparison.cloud(graphData, scale = c(4,.5), max.words = 50, title.size = 1.5)
+
+
+#prepare the Data for Radar Plot
+radarGraphData <- WholeConversation_Tibble %>%
+  inner_join(nrc, by = c ("WholeConversation_Ch" = "word")) %>% 
+  filter (!grepl("positive|negative", sentiment)) %>% 
+  count (sentiment) %>% 
+  group_by(sentiment) %>% 
+  rename("Count" = "n")
+
+
+# JavaScript radar chart
+chartJSRadar(radarGraphData)
